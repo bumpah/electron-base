@@ -3,20 +3,20 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Base of Electron App</title>
+    <title>Me! The app platform</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <style>
+        html {
+            font-family: Roboto,-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI","Oxygen","Ubuntu","Cantarell","Open Sans",sans-serif;
+        }
+    </style>
 </head>
 
 <body style="background: #fff;">
-    <h1>Electron</h1>
-    <p>
-        We are using node
-        <script>document.write(process.versions.node)</script>,
-        Chrome
-        <script>document.write(process.versions.chrome)</script>,
-        and Electron
-        <script>document.write(process.versions.electron)</script>.
-    </p>
+    <div id="root"></div>
+    <script>
+        require('./app/index.js')
+    </script>
 </body>
 
 </html>

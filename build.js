@@ -1,36 +1,60 @@
 // Our custom build process
 const fs = require('fs')
-const { spawn } = require('child_process')
+const path = require('path')
+const { spawn, execSync } = require('child_process')
+
+if(!fs.existsSync(path.join(__dirname, 'dist'))){
+    fs.mkdirSync(path.join(__dirname, 'dist'))
+    fs.copyFileSync(
+        path.join(__dirname, 'src', 'index.html'), 
+        path.join(__dirname, 'dist', 'index.html'))
+}    
+if(!fs.existsSync(path.join(__dirname, 'dist', 'index.html'))){
+    fs.copyFileSync(
+        path.join(__dirname, 'src', 'index.html'), 
+        path.join(__dirname, 'dist', 'index.html'))
+}    
 
 function log(...args) {
     console.log(...args)
 }
 
 // Electron watch process
-let elect = spawn('electron', ['dist'], { cwd: __dirname, shell: true })
-elect.stdout.on('data', data => {
-    log('electron: ', data.toString())
-})
-elect.stderr.on('data', data => {
-    console.error(data.toString())
-})
-elect.on('error', code => {
-    console.error(code)
-    process.exit(1)
-})
-
+let elect
+setTimeout(() => {
+    elect = spawnElectron()
+}, 2500)
+function spawnElectron() {
+    let proc = spawn('electron', ['dist'], { cwd: __dirname, shell: true })
+    proc.stdout.on('data', data => {
+        log('electron: ', data.toString())
+    })
+    proc.stderr.on('data', data => {
+        console.error(data.toString())
+    })
+    proc.on('error', code => {
+        console.error(code)
+        process.exit(1)
+    })
+    return proc
+}
 // Typescript watch process
-let tsc = spawn('yarn', ['tsc', '-w'], { cwd: __dirname, shell: true })
-tsc.stdout.on('data', data => {
-    log('tsc: ', data.toString())
-})
-tsc.stderr.on('data', data => {
-    console.error(data.toString())
-})
-tsc.on('error', code => {
-    console.error(code)
-    process.exit(1)
-})
+let tsc = spawnTsc()
+function spawnTsc() {
+    let proc = spawn('yarn', ['tsc', '-w'], { cwd: __dirname, shell: true })
+    proc.stdout.on('data', data => {
+        log('tsc: ', data.toString())
+    })
+    proc.stderr.on('data', data => {
+        console.error(data.toString())
+    })
+    proc.on('error', code => {
+        console.error(code)
+        process.exit(1)
+    })
+    
+    return proc
+}
 
 // Copy static files from 'src -> dist' process
 let timeout
