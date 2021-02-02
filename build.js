@@ -3,17 +3,17 @@ const fs = require('fs')
 const path = require('path')
 const { spawn, execSync } = require('child_process')
 
-if(!fs.existsSync(path.join(__dirname, 'dist'))){
+if (!fs.existsSync(path.join(__dirname, 'dist'))) {
     fs.mkdirSync(path.join(__dirname, 'dist'))
     fs.copyFileSync(
-        path.join(__dirname, 'src', 'index.html'), 
+        path.join(__dirname, 'src', 'index.html'),
         path.join(__dirname, 'dist', 'index.html'))
-}    
-if(!fs.existsSync(path.join(__dirname, 'dist', 'index.html'))){
+}
+if (!fs.existsSync(path.join(__dirname, 'dist', 'index.html'))) {
     fs.copyFileSync(
-        path.join(__dirname, 'src', 'index.html'), 
+        path.join(__dirname, 'src', 'index.html'),
         path.join(__dirname, 'dist', 'index.html'))
-}    
+}
 
 function log(...args) {
     console.log(...args)
@@ -52,14 +52,17 @@ function spawnTsc() {
         console.error(code)
         process.exit(1)
     })
-    
+
     return proc
 }
 
 // Copy static files from 'src -> dist' process
 let timeout
-fs.watch(__dirname + '/src').on('change', (ev, fname) => {
+fs.watch(path.join(__dirname, 'src')).on('change', (ev, fname) => {
     if (fname.endsWith('.tsx') || fname.endsWith('.ts')) return;
+    let thing = fs.statSync(path.join(__dirname, 'src', fname))
+    if (thing.isDirectory()) return;
+
     function copyCallback(err) {
         if (err) return console.error(err)
         log('fs:', 'File copy success, /src/' + fname + ' -> /dist/' + fname)
